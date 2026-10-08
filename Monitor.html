@@ -1,0 +1,756 @@
+ <html>
+  <head>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'/>
+    <title>Monitor</title>
+    <link href="style.css" rel="stylesheet">
+   
+
+  <script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+
+<script>
+  google.charts.load('current', {'packages':['gauge']})
+  google.charts.setOnLoadCallback(drawGauge)
+  </script>
+  </head>
+  
+<body>
+  <a href="/">Home</a> |
+<h3>
+
+
+<table>
+<tr><th></th><th>Situation</th><th>Direction</th><th>Hora</th></tr>
+<tr><td>Battery</td><td><h2 id ='voltage'></h2></td> <td><h2 id ='percentage'></h2></td><td><h2 id ='hora'></h2></td></tr>
+<tr><td>Cambio</td><td><h2 id ='temperature'></h2></td> <td><h2 id ='timeStamp'></h2></td> <td><h2 id ='pwm'></h2></td></tr>
+<tr><td> <button type=button onClick=refreshTemperature()>LER</button></td></tr>
+</table>
+<table>
+<h2 id="direction"></h2>
+<h2 id="motor"></h2>
+<h2 id="sensor"></h2>
+<h2 id="battery-display"></h2>
+  <tr>
+      <td>
+      <button type="button" id="buttonON" onClick="motor_on()">ON</button>
+    </td>
+    <td>
+      <button type="button" id="buttonOFF" onClick="motor_off()">OFF</button>
+    </td>
+   </tr>
+
+  <tr>
+    <td>
+      <button type="button" id= "ButtonL" onClick="motor_E()" value="NO">Left</button>
+    </td>
+  
+      <td>
+      <button type="button" id="buttonF" onClick="forward()"> F</button>
+      </td>
+  
+    <td>
+      <button type="button" id= "ButtonR" onClick="motor_E()" value="NO">Right</button>
+    </td>
+  </tr>
+      
+  <tr>
+    <td>
+    <button type="button" id="buttonR" onClick="reverse()"> R</button>
+  </td>
+  </tr>
+
+
+    <tr>
+      <td>
+     <input type="range" min="1" max="100" value="50" class="slider" id="myRange" onchange="updateValue(this.value)"/></td>
+      <td>
+        <label for = "myRange" >Value:  </label></td></tr>
+    
+	</table>
+   
+ 
+	<tr><th colspan = 7>PWM </th> </tr>
+   
+    <td>
+    <button type="button" onClick="PWM_off()">PWM_OFF</button></td>
+    <td>
+      <button type="button" onClick="PWM_on()">PWM_ON</button></td> 
+  <tr>
+      
+  <tr>
+      <td>
+        <button type="button" onClick="PWM_25()">PWM_25%</button></td>
+      <td>
+        <button type="button" onClick="PWM_50()">PWM_50%</button></td>
+      <td>
+        <button type="button" onClick="PWM_75()">PWM_75%</button></td> 
+      <td>
+  </tr>
+
+  
+  <h1 style='color:blue'>Roomperature</h1>
+  
+
+<div style="display:flex; gap:30px; flex-wrap:wrap;">
+
+<div class="battery-container">
+  <div class="circle">
+    <span id="batteryText">100%</span>
+  </div>
+  <div class="battery-bar" id="batteryBar"></div>
+<div class="circle">
+  <span id="tempText">25°C</span>
+</div>
+
+  <div class="battery-bar" id="batteryBar"></div>
+</div>
+
+
+<div style="display:flex; gap:30px; flex-wrap:wrap;">
+
+  <div id='gauge_div' style='width:280px; height: 140px;'></div>
+  <div id="gauge_temp" style="width:220px; height:220px;"></div>
+  <div id="gauge_battery" style="width:220px; height:220px;"></div>
+</div>
+  <div class="battery-bar" id="batteryBar"></div>
+  <p>Valor Atual: <span id="percent">--</span></p>
+  <FORM action method=post>
+  <button type=submit name=button1 id=button1 value=but1 onclick=update()>CLICK FOR UPDATE</button>
+  
+
+<div class="controls">
+  <button class="btn" data-sound="hover">MANUAL</button>
+  <button class="btn" data-sound="click">OVERRIDE</button>
+  <button class="btn alt" data-sound="click">SCAN</button>
+</div>
+
+<!-- Sons -->
+<audio id="hoverSound" src="hover.mp3"></audio>
+<audio id="clickSound" src="click.mp3"></audio>
+
+  <div class="panel left">
+    <h2>ROBOT DATA</h2>
+    <p>Battery: 72%</p>
+    <p>CPU: 38°C</p>
+    <p>Power: 86%</p>
+  </div>
+
+  <div class="panel center">
+    <div class="robot"></div>
+  </div>
+
+<tr><td> </td><td> <button type=button onClick=getAngle()>GetAngle</button></td></tr>
+
+  <div class="panel right">
+    <h2>TELEMETRY</h2>
+    <p>X: 04.63</p>
+    <p id="angle">Y: -15.21</p>
+    <p>Z: 038.64</p>
+  </div>
+</div>
+
+    <tr>
+      <td>
+       <input type="range" min="1" max="100" value="50" class="slider" id="myRange" onchange="updateValue(this.value)"/></td> 
+      <td>
+        <label for = "Kp" >KP:  </label></td></tr>
+        
+    <tr>
+      <td>
+      <input type="range" min="1" max="100" value="50" class="slider" id="myRange" onchange="updateValue(this.value)"/></td> 
+      <td>
+        <label for = "Ki" >KI:  </label></td></tr>
+        
+    <tr>
+      <td>
+      <input type="range" min="1" max="100" value="50" class="slider" id="myRange" onchange="updateValue(this.value)"/></td> 
+      <td>
+        <label for = "Kd" >KD:  </label></td></tr>
+    
+
+</form>
+
+
+
+</body>
+
+  
+
+
+  <h1 style="text-align:center;">Joystick Robot Car</h1>
+  <div id="joystickZone"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js"></script>
+  <script>
+    const joystick = nipplejs.create({
+      zone: document.getElementById('joystickZone'),
+      mode: 'static',
+      position: { left: '50%', top: '50%' },
+      color: 'blue'
+    });
+
+    let lastSent = 0;
+
+    joystick.on('move', (evt, data) => {
+      const now = Date.now();
+      if (now - lastSent > 150) { // limit update rate
+        if (data && data.angle) {
+          const angle = data.angle.degree;
+          const force = Math.min(data.force, 1.0).toFixed(2);
+          fetch(`/drive?angle=${angle}&force=${force}`);
+          lastSent = now;
+        }
+      }
+    });
+
+    joystick.on('end', () => {
+      fetch('/drive?angle=0&force=0'); // stop motors
+    });
+  </script>
+
+
+
+  <script>
+  const hoverSound = document.getElementById("hoverSound");
+const clickSound = document.getElementById("clickSound");
+
+document.querySelectorAll(".btn").forEach(btn => {
+
+  // Som ao passar o mouse
+  btn.addEventListener("mouseenter", () => {
+    hoverSound.currentTime = 0;
+    hoverSound.play();
+  });
+
+  // Som ao clicar
+  btn.addEventListener("click", () => {
+    clickSound.currentTime = 0;
+    clickSound.play();
+  });
+
+});
+
+</script>
+  
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+<script type='text/javascript'>
+
+  setInterval(update, 10000);
+  function update()
+  {
+    refreshTemperature();
+    //refreshHumidity();
+    gerarValorSensor();
+   // updateGauge(temp);
+   // updateTemp(temp);
+    updateBattery(data.percent);
+    //startTime();
+  }
+
+
+  function getAngle()
+        {
+          var xmlhttp = new XMLHttpRequest();
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+              document.getElementById('angle').innerHTML = 'Angle: ' + JSON.parse(xmlhttp.responseText).angle + '';
+             
+            }
+        };
+          xmlhttp.open('GET', '/angle', true);
+          xmlhttp.send();
+        }
+ 
+      
+
+
+
+// Function to fetch battery data from ESP32
+async function BatteryMonitor() {
+    try {
+        const response = await fetch('/battery'); // Endpoint on ESP32
+        const data = await response.json();
+        
+        // Update HTML elements
+        document.getElementById('voltage').innerText = data.voltage.toFixed(2) + ' V';
+        document.getElementById('percentage').innerText = data.percent + '%';
+        
+        // Change color based on charge
+        const batteryDisplay = document.getElementById('battery-display');
+        batteryDisplay.style.color = data.percent < 20 ? 'red' : 'green';
+    } catch (error) {
+        console.error('Error fetching battery data:', error);
+    }
+}
+
+const totalSegments = 12; // quantidade de blocos
+const batteryBar = document.getElementById("batteryBar");
+
+// cria os blocos
+for (let i = 0; i < totalSegments; i++) {
+  const div = document.createElement("div");
+  div.classList.add("segment");
+  batteryBar.appendChild(div);
+}
+
+function updateBattery(percent) {
+  const segments = document.querySelectorAll(".segment");
+  const activeCount = Math.round((percent / 100) * segments.length);
+
+  segments.forEach((seg, index) => {
+    if (index < activeCount) {
+      seg.classList.add("active");
+
+      // atraso progressivo (efeito correndo)
+      seg.style.animationDelay = (index * 0.1) + "s";
+
+    } else {
+      seg.classList.remove("active");
+      seg.style.animationDelay = "0s";
+    }
+  });
+}
+
+ function gerarValorSensor() {
+            // Math.random() gera entre 0 e 0.999...
+            // Multiplicamos por 101 para incluir o 100 ao usar Math.floor
+            const percent = Math.floor(Math.random() * 101);
+            document.getElementById('valor-sensor').innerText = percent;
+            console.log("Novo valor do sensor: " + percent);
+            
+            // Aqui você chamaria sua função que atualiza o gráfico/interface
+            // ex: atualizarGrafico(percent);
+        }
+
+// function updateBattery(percent) {
+//   const segments = document.querySelectorAll(".segment");
+
+//   const activeCount = Math.round((percent / 100) * totalSegments);
+
+//   segments.forEach((seg, index) => {
+//     if (index < activeCount) {
+//       seg.classList.add("active");
+//     } else {
+//       seg.classList.remove("active");
+//     }
+//     if (percent < 20) seg.style.background = "#ff3b3b";
+// else if (percent < 50) seg.style.background = "#ffaa00";
+// else seg.style.background = "#00eaff";
+//   });
+// }
+
+
+// function updateBattery(percent) {
+//   document.getElementById("batteryText").innerText = percent + "%";
+//   document.getElementById("batteryFill").style.width = percent + "%";
+
+//   // cor dinâmica
+//   const fill = document.getElementById("batteryFill");
+
+//   if (percent < 20) {
+//     fill.style.background = "#ff3b3b";
+//   } else if (percent < 50) {
+//     fill.style.background = "#ffaa00";
+//   } else {
+//     fill.style.background = "#00ffcc";
+//   }
+// }
+
+var tempOptions = {
+  min: -10,
+  max: 50,
+  width: 220,
+  height: 220,
+  redFrom: 35,
+  redTo: 50,
+  yellowFrom: 20,
+  yellowTo: 35,
+  greenFrom: 0,
+  greenTo: 20,
+  minorTicks: 5
+};
+
+var batteryOptions = {
+  min: 0,
+  max: 100,
+  width: 220,
+  height: 220,
+  redFrom: 0,
+  redTo: 20,
+  yellowFrom: 20,
+  yellowTo: 50,
+  greenFrom: 50,
+  greenTo: 100,
+  minorTicks: 5
+};
+
+var gaugeOptions = {
+  min: -15,
+  max: 50,
+  yellowColor: '#1a66ff',
+  yellowFrom: -15,
+  yellowTo: 15,
+  greenFrom: 15,
+  greenTo: 25,
+  redFrom: 25,
+  redTo: 50,
+  minorTicks: 5
+};
+
+var gauge;
+var gaugeData;
+
+var tempGauge, batteryGauge;
+var tempData, batteryData;
+
+function drawGauges() {
+
+  // Temperatura
+  tempData = new google.visualization.DataTable();
+  tempData.addColumn('number', 'Temp');
+  tempData.addRows(1);
+
+  tempGauge = new google.visualization.Gauge(
+    document.getElementById('gauge_temp')
+  );
+
+  // Bateria
+  batteryData = new google.visualization.DataTable();
+  batteryData.addColumn('number', 'Battery');
+  batteryData.addRows(1);
+
+  batteryGauge = new google.visualization.Gauge(
+    document.getElementById('gauge_battery')
+  );
+
+  // valores iniciais
+  tempData.setCell(0, 0, 25);
+  batteryData.setCell(0, 0, 80);
+
+  tempGauge.draw(tempData, tempOptions);
+  batteryGauge.draw(batteryData, batteryOptions);
+}
+
+  var gauge, gaugeData;
+
+  function drawGauge() {
+    gaugeData = new google.visualization.DataTable();
+    gaugeData.addColumn('number', 'Temp');
+    gaugeData.addRows(1);
+
+    gaugeData.setCell(0, 0, percent);
+
+    gauge = new google.visualization.Gauge(
+      document.getElementById('gauge_div')
+    );
+
+    gauge.draw(gaugeData, {
+      min: -15,
+      max: 50
+    });
+  }
+
+  google.charts.load('current', { packages: ['gauge'] });
+  google.charts.setOnLoadCallback(drawGauges);
+  
+  google.charts.setOnLoadCallback(drawGauge);
+
+
+
+
+function updateGauge(temp) {
+  gaugeData.setCell(0, 0, temp);
+  gauge.draw(gaugeData, gaugeOptions);
+}
+
+
+function updateBattery(percent) {
+  batteryData.setCell(0, 0, percent);
+  batteryGauge.draw(batteryData, batteryOptions);
+}
+
+function updateTemp(temp) {
+  tempData.setCell(0, 0, temp);
+  tempGauge.draw(tempData, tempOptions);
+   document.getElementById("tempText").innerText = temp + "°C";
+}
+
+
+async function forward() {
+  const res = await fetch('/forward');
+  const data = await res.json();
+  document.getElementById('direction').innerText = data.direction;
+} 
+
+
+function pwm_range()
+{
+     var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+
+        var myObj = JSON.parse(this.responseText);	
+        document.getElementById('myRange').innerHTML= myObj.pwm_value + '';
+        var output = document.getElementById("demo").innerHTML = slider.value;
+      };
+    }
+
+      xmlhttp.open('GET', "/handlePWM", true);
+      xmlhttp.send();
+  }
+
+function pwm_music()
+  {
+     // counter ++;
+     var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+
+        var myObj = JSON.parse(this.responseText);	
+        document.getElementById('pwm').innerHTML= myObj.pwm_value + '';
+      };
+    }
+
+      xmlhttp.open('GET', "/pwm_music", true);
+      xmlhttp.send();
+  }
+
+    
+function PWM_on()
+  {
+     // counter ++;
+     var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+
+        var myObj = JSON.parse(this.responseText);	
+        document.getElementById('pwm').innerHTML= myObj.pwm_value + '';
+      }
+      };
+
+      xmlhttp.open('GET', "/pwm_on", true);
+      xmlhttp.send();
+  }
+
+      
+function PWM_off()
+    {
+     // counter ++;
+     var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+
+        var myObj = JSON.parse(this.responseText);	
+        document.getElementById('pwm').innerHTML= myObj.pwm_value + '';
+      
+      }
+      };
+      xmlhttp.open('GET', "/pwm_off", true);
+      xmlhttp.send();
+  }
+
+
+function PWM_25()
+    {
+         // counter ++;
+          
+         var xmlhttp = new XMLHttpRequest();
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+    
+            var myObj = JSON.parse(this.responseText);	
+            document.getElementById('pwm').innerHTML= myObj.pwm_value + '';
+          }
+          };
+
+          xmlhttp.open('GET', "/pwm_25", true);
+          xmlhttp.send();
+    }
+  
+  
+function PWM_50()
+        {
+         // counter ++;
+          
+         var xmlhttp = new XMLHttpRequest();
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+    
+            var myObj = JSON.parse(this.responseText);	
+            document.getElementById('pwm').innerHTML= myObj.pwm_value + '';
+          
+          }
+          };
+          xmlhttp.open('GET', "/pwm_50", true);
+          xmlhttp.send();
+          }
+
+function PWM_75()
+        {
+         // counter ++;
+          
+         var xmlhttp = new XMLHttpRequest();
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+    
+            var myObj = JSON.parse(this.responseText);	
+            document.getElementById('pwm').innerHTML= myObj.pwm_value + '';
+          
+          }
+          };
+          xmlhttp.open('GET', "/pwm_75", true);
+          xmlhttp.send();
+}
+
+
+async function forward() {
+  const res = await fetch('/forward');
+  const data = await res.json();
+  document.getElementById('direction').innerText = data.direction;
+} 
+
+
+function reverse(){
+
+          var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+              if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+      
+              var myObj = JSON.parse(this.responseText);	
+              document.getElementById('direction').innerHTML= myObj.direction + '';
+            };
+            }
+
+            xmlhttp.open('GET', "/reverse", true);
+            xmlhttp.send();
+
+}
+
+function motor_off()
+      {
+      var x = document.getElementById(("buttonOFF"));
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+              if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+      
+              var myObj = JSON.parse(this.responseText);	
+              document.getElementById('motor').innerHTML= myObj.motor + '';
+            }
+            };
+
+            xmlhttp.open('GET', "/motor_off", true);
+            xmlhttp.send();
+         
+}
+
+function motor_on()
+      {
+      var x = document.getElementById(("buttonON"));
+
+       var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+  
+          var myObj = JSON.parse(this.responseText);	
+          document.getElementById('motor').innerHTML= myObj.motor + '';
+        
+        }
+        };
+        xmlhttp.open('GET', "/motor_on", true);
+        xmlhttp.send();
+        
+}
+
+function motor_E()
+          {
+           // counter ++;
+           var t = document.getElementById(("ButtonL"));
+
+           if(t.value=="YES"){
+            t.value = "NO";
+          
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+              if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+      
+              var myObj = JSON.parse(this.responseText);	
+              document.getElementById('direction').innerHTML= myObj.direction + '';
+            
+            }
+            };
+            xmlhttp.open('GET', "/motor_D", true);
+            xmlhttp.send();
+          
+          
+          }
+            else if (t.value=="NO"){
+              t.value="YES";
+           
+           var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+              if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+      
+              var myObj = JSON.parse(this.responseText);	
+              document.getElementById('direction').innerHTML= myObj.direction + '';
+            
+            }
+            };
+            xmlhttp.open('GET', "/motor_E", true);
+            xmlhttp.send();
+ 
+          }
+
+  }
+
+
+  
+      
+  function refreshTemperature()
+    {
+     // counter ++;
+      
+     var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+
+        var myObj = JSON.parse(this.responseText);	
+        document.getElementById('temperature').innerHTML= myObj.temperature + '°C';
+      
+      }
+      };
+      xmlhttp.open('GET', "/temperature", true);
+      xmlhttp.send();
+      }
+      
+  function refreshHumidity()
+        {
+          var xmlhttp = new XMLHttpRequest();
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+              document.getElementById('hora').innerHTML = 'Humidity: ' + JSON.parse(xmlhttp.responseText).hora + '%';
+             
+            }
+        };
+          xmlhttp.open('GET', '/log_view', true);
+          xmlhttp.send();
+        }
+ 
+      
+  function refreshStatusPin()
+        {
+          var xmlhttp = new XMLHttpRequest();
+          xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200){
+             document.getElementById('sensor').innerHTML = 'Sensor: ' + JSON.parse(xmlhttp.responseText).Tempo.temp + 'ON' ;
+            }
+          };
+          xmlhttp.open('GET', '/jsonTemp', true);
+          xmlhttp.send();
+        }
+       
+    </script>
+
+
+  </html>

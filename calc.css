@@ -1,0 +1,12 @@
+.img
+{
+    display: flex;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 1200px;
+    height: 150px;
+    
+    position: space-between;
+    margin: auto 20px auto 20px;;
+    padding: 5px; 
+}

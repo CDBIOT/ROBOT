@@ -1,0 +1,245 @@
+
+<style type="text/css">
+body {
+	margin-left: auto;
+	margin-top: 0px;
+	margin-right: auto;
+	margin-bottom: 0px;
+	background-color: #FFF;
+	display: block;
+	width: 800px;
+	border:solid 0px #C7C7C7;
+}
+body,td,th {
+	font-size: 12px;
+	color: #999;
+	font-style: normal;
+	font-weight: normal;
+	font-family: verdana, Geneva, sans-serif;
+}
+
+button {
+	width: 80%;
+	height: 20px;
+	font-size: 10px;
+	color: #666;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	-webkit-box-shadow: 0px 0px 10px 3px #CCCCCC;
+	box-shadow: 0px 0px 10px 3px #CCCCCC;
+}
+#principal {
+	position:relative;
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+	height:auto;
+	background-color:#FFF;
+	text-align:center;
+}
+#nomes{
+	position:relative;
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+	height:auto;
+	background-color:#FFF;
+	text-align:center;
+	font-size: 15px;
+	color: black;
+}
+#principal label {
+	position: relative;
+	display: block;
+	top: 0;
+	margin-top: 10px;
+	text-shadow: 0px 0px 5px #666666;
+	font-weight: normal;
+	color: #666666;
+}
+input {
+	margin-top:15px;
+	width: 80%;
+	height: 20px;
+	color: #999999;
+	font-size: 10px;
+	-webkit-box-shadow: 0px 0px 10px 3px #CCCCCC;
+	box-shadow: 0px 0px 10px 3px #CCCCCC;
+}
+fieldset { 
+    display: block;
+    margin-left: 2px;
+    margin-right: 2px;
+    padding-top: 0.35em;
+    padding-bottom: 0.625em;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    border: 5px groove (internal value);
+	border-radius: 25px;
+	text-align:justify;
+}
+legend { 
+	position:relative;
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+	height:auto;
+	background-color:#FFF;
+	text-align:center;
+	font-size: 10px;
+	color: #4DA491;
+}
+@media (max-width:600px){
+	body {
+		width:100%;
+	}
+	body,td,th {
+		font-size: 10px;
+	}
+	button {
+		width: 80%;
+		height: 30px;
+		margin-top: 30px;
+		margin-bottom: 10px;
+		font-size: 20px;
+		-webkit-box-shadow: 0px 0px 15px 10px #CCCCCC;
+		box-shadow: 0px 0px 15px 10px #CCCCCC;
+	}	
+	#principal label {
+		position: relative;
+		display: block;
+		top: 0;
+		margin-top: 10px;
+		text-shadow: 0px 0px 5px #666666;
+		font-weight: normal;
+		color: #666666;
+		font-size: 15px;
+		letter-spacing: 4px;
+		word-spacing: 6px;
+	}
+	input {
+		width: 80%;
+		height: 30px;
+		color: #999999;
+		font-size: 20px;
+		-webkit-box-shadow: 0px 0px 15px 10px #CCCCCC;
+		box-shadow: 0px 0px 15px 10px #CCCCCC;
+	}
+	fieldset { 
+		display: block;
+		margin-left: 2px;
+		margin-right: 2px;
+		padding-top: 0.35em;
+		padding-bottom: 0.625em;
+		padding-left: 0.75em;
+		padding-right: 0.75em;
+		border: 5px groove (internal value);
+		border-radius: 25px;
+		text-align:justify;
+		font-size: 10px;
+	}
+	#nomes{
+		position:relative;
+		display:block;
+		margin-left:auto;
+		margin-right:auto;
+		height:auto;
+		background-color:#FFF;
+		text-align:center;
+		font-size: 25px;
+		color: black;
+	}
+}
+
+</style>
+<script type="text/javascript">
+//envia configuracoes
+function SendConfigs() 
+{
+	var dig = prompt("Digite: salvar","texto");
+	if(dig != "salvar"){
+		alert("Voce deve digitar a palavra \"salvar\"");
+		return;
+	}
+	
+	var temp_ssid = document.getElementById('wifi_ssid').value;
+	var temp_pass = document.getElementById('wifi_pass').value;
+	var temp_gtw = document.getElementById('wifi_gtw').value;
+	var temp_mask = document.getElementById('wifi_mask').value;
+	var temp_ip = document.getElementById('md_ip').value;
+	var temp_port = document.getElementById('md_port').value;
+
+	var req = new XMLHttpRequest();
+	req.open("POST", "save", true); 
+	req.send(temp_ssid + "\r\n" + temp_pass + "\r\n" + temp_gtw + "\r\n" + temp_mask + "\r\n" + temp_ip + "\r\n" + temp_port + "\r\n\r\n");
+	req.onreadystatechange = function() 
+	{
+		if (req.readyState == 4 && req.status == 200) 
+		{
+			if(req.responseText=="OK")
+			{
+				document.getElementById('wifi_ssid').disabled=true;
+				document.getElementById('wifi_pass').disabled=true;
+				document.getElementById('wifi_gtw').disabled=true;
+				document.getElementById('wifi_mask').disabled=true;
+				document.getElementById('md_ip').disabled=true;
+				document.getElementById('md_port').disabled=true;
+				document.getElementById('botao').disabled=true;
+				document.getElementById('msg').style.color = "green";
+				document.getElementById('msg').innerHTML = "OK: Salvo Com Sucesso!";
+			}
+			else
+			{
+				document.getElementById('wifi_ssid').disabled=true;
+				document.getElementById('wifi_pass').disabled=true;
+				document.getElementById('wifi_gtw').disabled=true;
+				document.getElementById('wifi_mask').disabled=true;
+				document.getElementById('md_ip').disabled=true;
+				document.getElementById('md_port').disabled=true;
+				document.getElementById('botao').disabled=true;
+				document.getElementById('msg').style.color = "red";
+				document.getElementById('msg').innerHTML = "ERRO: Nao Salvou!";
+			}
+		}
+	}
+}
+</script>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ESP8266 MODBUS SLAVE</title>
+	</head>
+	<body onload = PreLoad()>
+		<div id="principal">
+		<fieldset>
+		<legend ><b>MODULO IO REMOTO COM ESP8266</b></legend>
+		Nó Modbus TCP/IP, GPIO12 saida, GPIO5 entrada digital analógico 3 filtro funcoes <b>03</b>, <b>04</b>, <b>06</b> e <b>16</b>.<br>
+		Configurar os parâmetros abaixo de acordo com sua rede.
+		</fieldset>
+		
+		<fieldset>
+		<legend ><b>CONFIGURAÇÕES GERAIS</b></legend>
+		<div id="nomes">Wifi SSID:<br>
+		<input type="text" id="wifi_ssid" placeholder="SSID do roteador Wifi" style="text-align: center;" value="" maxlength="16" ><br><br>
+		Wifi Password:<br>
+		<input type="text" id="wifi_pass" placeholder="Senha do roteador Wifi" style="text-align: center;" value="" maxlength="16" ><br><br>
+		Wifi Gateway:<br>
+		<input type="text" id="wifi_gtw" placeholder="Gateway da rede" style="text-align: center;" value="" maxlength="16" ><br><br>
+		Wifi Mascara de Rede:<br>
+		<input type="text" id="wifi_mask" placeholder="Mascara da rede" style="text-align: center;" value="" maxlength="16" ><br><br>
+		Wifi e Modbus IP:<br>
+		<input type="text" id="md_ip" placeholder="IP do ESP8266 na rede" style="text-align: center;" value="" maxlength="16" ><br><br>
+		Modbus Porta:<br>
+		<input type="text" id="md_port" placeholder="PORTA do ESP8266 na rede" style="text-align: center;" value="" maxlength="5" ><br>
+		</div>
+		<form>
+		<div id="nomes">
+		<button type="button" id="botao" onclick="SendConfigs()" > SALVAR CONFIGURAÇÕES</button>
+		<label id="msg"> </label>
+		</div>		
+		</form>
+		</fieldset>
+				
+		</div>   
+	</body>
+</html> 

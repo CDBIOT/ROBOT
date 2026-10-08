@@ -1,0 +1,224 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width ">
+  
+  <link href="css" rel="stylesheet">
+  <title>ESP JSONChart - Log</title>
+</head>
+<script>
+    function gravarLog() {
+      fetch("/getlog")
+        .then(res => res.text())
+        .then(txt => document.getElementById("logBox").value = txt)
+        .catch(err => alert("Erro: " + err));
+    }
+   
+    function enviarAgendamento() {
+      const cmd = document.getElementById("cmd").value;
+      fetch("/setSchedule?cmd=" + encodeURIComponent(cmd))
+        .then(res => res.text())
+        .then(txt => alert(txt))
+        .catch(err => alert("Erro: " + err));
+    }
+
+ function readFiles() {
+      fetch("/fileList")
+        .then(res => res.text())
+        .then(txt => document.getElementById("logFilesBox").value = txt)
+        .catch(err => alert("Erro: " + err));
+    }
+
+ function sendLogMqtt() {
+  const file = document.getElementById("mqttfile").value;
+      fetch("/sendLogMqtt?file=" + encodeURIComponent(file))
+        .then(res => res.text())
+        .then(msg => alert(msg))
+        .catch(err => alert("Erro: " + err));
+    }
+    
+ function fileDown() {
+  const file = document.getElementById("fileName").value;
+      fetch("/fileDown?file="+ encodeURIComponent(file))
+        .then(res => {
+    if (!res.ok) {
+      throw new Error('Erro na resposta');
+    }
+    return res.blob();
+  })
+      //.then(txt => document.getElementById("filedown").value = txt)
+      .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file + ".txt"; // nome do arquivo
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+    })
+        .catch(err => alert("Erro: " + err));
+    }
+    
+
+async function readLog() {
+  const file = document.getElementById("fileName").value.trim();
+  if (!file) {
+    alert("Digite o nome do arquivo");
+    return;
+  }
+  try{
+      const res = await fetch(`/fileRead?file=${file}`)
+      //const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error("Erro HTTP: " + res.status);
+    }
+    
+     const txt =  await res.text();
+    // TABELA
+  document.getElementById("logReadBox").value = txt;
+  //document.getElementById("logReadBox").value = JSON.stringify(data, null, 2);
+  
+//const linhas = txt.split("\n");
+//let html = "";
+// linhas.forEach(l => {
+    // data.forEach(r => {
+     //let hora=[], temp=[], pres=[];
+  //const [hora,temp,pres] = l.split(",");
+  //html += `
+   // <tr>
+   //   <td>${hora}</td>
+   //   <td>${temp}</td>
+   //   <td>${pres}</td>
+   // </tr>
+ // `;
+//});
+//document.getElementById("tbl").innerHTML = html;
+  }catch{  alert("Erro: no processamento  ");   } 
+}
+
+  </script>
+
+<body>
+  <h1>ESP JSON CHART - Log</h1>
+  <h2>
+    <a href="/">Home</a> |
+    <a href="relay">Relé</a> |
+    <a href="testRead">Read Logs</a> 
+  </h2>
+  <h3>
+
+
+<table>
+    <tr>
+      <th rowspan="5">Log em Memória</th>
+    
+<tr>
+  <td>
+  <h2>Agendar Evento</h2>
+  <form onsubmit="enviarAgendamento()" return false;>
+    <label for="cmd">Comando (ex: DH 14:00): 
+    SH 2018-10-12 16:30  - Ligar em 12/10/2018 16:30
+*   MH 12 16:30          - Ligar mensalmente no dia 12 às 16:30
+*   WL 6 16:30           - Desligar semanalmente nas sextas-feiras às 16:30 
+*   DH 16:30             - Ligar diariamente às 16:30
+*   IH 00:30             - Desligar após estar ligado por 30 minutos
+*   IL 00:10             - Ligar após estar desligado por 10 minutos</label><br>
+
+
+    <input type="text" id="cmd" placeholder="SH 2025-07-15 14:00"><br>
+    <button type="submit" onClick=" enviarAgendamento()">Enviar Agendamento</button>
+   
+  </td>
+  
+ </form>
+</tr>
+
+<tr>
+  <td>
+    <textarea id="logBox" readonly rows="2" cols="80"></textarea>
+     <button onclick="gravarLog()">Gravar Log</button>
+  </td>
+</tr>
+
+
+<tr>
+  <td>
+    <label>Nome do arquivo:</label>
+    <form onsubmit="readLog(); return false;">
+    <input id="fileName" placeholder="2026-01-14.json">
+  </td>
+</tr>
+
+<tr>
+  <td>
+      <textarea id="logReadBox" readonly rows="10" cols="80"></textarea>
+      <button onclick="readLog()">Read Logs</button>
+
+  </td>
+   </form>
+</tr>
+
+
+
+
+<tr>
+    
+  <th rowspan="6">Log em Arquivo</th>
+      <td>
+       <textarea id="logFilesBox" readonly rows="10" cols="80"></textarea>
+        <button id="fileRead" onclick="readFiles()">Files in memory</button>
+      </td>
+  </tr>
+
+  <tr>
+      <td>
+        <input id="mqttfile" placeholder="2026-01-14.json">
+        <button id="sendLogMqtt" onclick="sendLogMqtt()">Send log via Mqtt</button>
+      </td>
+  </tr>
+
+
+  <tr>
+      <td>
+        <input id="fileName" placeholder="2026-01-14.json"> 
+      </td>
+  </tr>
+
+  <tr>
+      <td>
+      <textarea id="filedown" readonly rows="10" cols="80"></textarea>
+       <button onclick="fileDown()">Download file</button>
+      </td>
+  </tr>
+
+    
+  <tr>
+    <td>
+      <a href="/logReset" onclick="return confirm('Apagar Log em Memória?')">Apagar</a>
+    </td>
+  </tr>
+
+
+
+  <tr>
+    <td>
+        <input type="button" id="btnOn" value="Ligar" onClick="setRelay(1)">
+        <input type="button" id="btnOff" value="Desligar" onClick="setRelay(0)">
+        <input type="button" id="btndisp" value="Setar" onClick="setdisp()">
+    </td>
+  </tr>
+  
+  <tr>
+  <th>Espaço</th>
+      <td>
+        #fsSpace#
+      </td>
+  </tr>
+</table>
+  </h3>
+</body>
+</html>

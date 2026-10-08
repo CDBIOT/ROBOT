@@ -1,0 +1,89 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>SCAN com JSON & SPIFFS</title>
+  <link href="css" rel="stylesheet">
+  <script src="js.js"></script> 
+</head>
+<body>
+  <h1>Configuração com JSON & SPIFFS</h1>
+  <h2>
+  
+    <a href="Config">Config</a> |
+    <a href="Monitor">Monitor</a> |
+    <a href="loggraf">Lograf</a> |
+    <a href="Relogio">Relogio</a> |
+	<a href="log">Log</a> |
+    <a href="jsonTemp">Temperatura</a> |
+    <a href="reconfig" onclick="return confirm('Reconfigurar módulo?')">Reconfigurar</a> |
+    <a href="reboot" onclick="return confirm('Reiniciar módulo?')">Reiniciar</a>
+  </h2>
+  <h3>
+  <table>
+    <tr><th colspan="2" class="msg">Bem-vindo à Interface Web</th></tr>
+    <tr><th>Identificação</th><td>#id#</td></tr>
+    <tr><th>LED</th><td>#led#</td></tr>
+    <tr><th>SSID</th><td>#ssid#</td></tr>
+    <tr><th>Senha</th><td>#pw#</td></tr>
+    <tr><th>IP Interno</th><td>#sysIP#</td></tr>
+    <tr><th>IP Cliente</th><td>#clientIP#</td></tr>
+    <dt>Soft AP MAC</dt><dd>00:00:00:00:00:00</dd>
+    <dt>Station MAC</dt><dd>00:00:00:00:00:00</dd>
+    <tr><th>Navegador</th><td colspan="3">#userAgent#</td></tr>
+  </table>
+
+
+<form name="config" action="configSave" method="post">
+<table>
+  <tr>
+	<th colspan="2" class="msg">Configuração</th>
+  </tr>
+  <tr>
+  <tr> <th rowspan="2">Wi-Fi</th><td>SSID: <input type="text" name="ssid" value="#ssid#" size="25" maxlength="29"></td> </tr>
+  <tr> <td>Senha: <input type="password" name="pw" size="25" maxlength="29"></td> </tr>
+  <tr><th colspan="2" class="msg"><input id="save" type="submit" value="Gravar" onClick="return confirm('Gravar a configuração?')"></th></tr>
+</table>
+</form>
+</h3>
+</body>
+  
+<script type="text/javascript">
+	//envia configuracoes
+	function configSave() 
+	{
+		
+		var ssid = document.getElementById('ssid').value;
+		var pw = document.getElementById('pw').value;
+	
+		var req = new XMLHttpRequest();
+		req.open("GET", "configRead", true); 
+		req.send(ssid + "\r\n" + pw + "\r\n\r\n");
+	
+		req.onreadystatechange = function() 
+		{
+			if (req.readyState == 4 && req.status == 200) 
+			{
+				if(req.responseText=="OK")
+				{
+					document.getElementById('ssid').disabled=true;
+					document.getElementById('pw').disabled=true;
+					document.getElementById('msg').style.color = "green";
+					document.getElementById('msg').innerHTML = "OK: Salvo Com Sucesso!";
+					console.log(ssid).value;
+					console.log(pw).value;
+				}
+				else
+				{
+					document.getElementById('ssid').disabled=true;
+					document.getElementById('pw').disabled=true;
+					document.getElementById('msg').style.color = "red";
+					document.getElementById('msg').innerHTML = "ERRO: Nao Salvou!";
+					console.log(ssid);
+					console.log(pw);
+				}
+			}
+		}
+	}
+	</script>
+	

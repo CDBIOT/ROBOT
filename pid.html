@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=auto">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<title>PID Robot</title>
+<link href="Style.css" rel="stylesheet">
+
+</head>
+
+
+<body>
+
+    <div class="img">
+	    <form name="img" action="/" method="get">
+            <div class="img">
+		    <input type="image" src="R.png" width="100" height="100" onClick="this.form.submit()">
+            </div>
+	    </form>
+         <h3>PID Robot</h3>
+    </div>
+<form action="Calc" method="post">
+<h3>
+<table>
+<th colspan="2"><h3>INPUTS </h3></th> 
+
+<tr> <td>KP  <input type="number" id="kp" onChange = "pid.update()"></td><td><h3 id="k0Value">KP:  </h3> </td></tr>
+<tr> <td>KI  <input type="number" id="ki" onChange = "sum()"></td><td><h3 id="k1Value">KI: </h3></td></tr>
+<tr> <td>KD  <input type="number" id="kd" onChange = "pid.update()"></td><td><h3 id="k2Value">KD: </h3></td></tr>
+<tr> <td>SP  <input type="number" id="setpoint" onChange = "pid.currentValue"></td><td><h3 id="SPvalue">SP:  </h3></td></tr>
+
+<tr><td><h3 id="integralValue">I:  </h3> </td><td><h3 id="derivative">D: </h3></td></tr>
+
+<tr><td><h3 id="Z">SUM: </h3></td><td><h3 id="err">Error:  </h3></td></tr>
+
+<tr><td><h3 id="W">MULT:  </h3> </td><td><h3 id="K">SUB:  </h3> </td></tr>
+
+<tr><td><h3 id="currentValue">CV: </h3> </td> <td><h3 id="update">Update:</h3> </td></tr>
+
+<td>
+<button type="button" class = "add" id="btnOn" onClick="pid.update()">PID</button>
+<button type="button" id="btnOff"  onClick="sum()">SUM</button>
+<button type="button" id="btndisp" onClick="sub()">SUB</button>
+<button type="button" id="btndisp" onClick="mult()">MULT</button>
+</td>
+<td>
+<button type="button" onclick="calcularPID()">PIDClass</button><h2 hd="disp"></h2>
+</td>
+</h3>
+</table>
+
+</form>
+
+<H1 value= "Z" id="Z"></H1>
+<H1 value= "K" id="K"></H1>
+<H1 value= "W" id="W"></H1>
+
+<br>
+
+
+<script type="text/javascript">
+
+// Utility function to safely get numeric value from an input field
+function getValueById(id) {
+    const el = document.getElementById(id);
+    if (!el) throw new Error(`Element with id "${id}" not found`);
+    const value = parseFloat(el.value);
+    if (isNaN(value)) throw new Error(`Invalid number in element "${id}"`);
+    return value;
+}
+
+class PIDController {
+   constructor(kp, ki, kd, setpoint) {
+       this.kp = getValueById('kp');
+       this.ki = getValueById('ki');
+       this.kd = getValueById('kd');
+       this.setpoint = setpoint;
+       this.previousError = 0;
+       this.integral = 0;
+   }
+
+
+update(currentValue) {
+       this.error = this.setpoint - currentValue;
+       this.integral += this.error;
+       this.derivative = this.error - this.previousError;
+       this.output = this.kp * this.error + this.ki * this.integral + this.kd * this.derivative;
+       this.previousError = this.error;
+       
+    this.output =
+        this.kp*this.error+
+        this.ki*this.integral+
+        this.kd*this.derivative;
+
+    this.previousError=this.error;
+
+    return this.output;
+
+   }
+   soma() {
+	const som = this.kp - this.kd;
+	return som;
+   }
+
+}
+// Usage
+const pid = new PIDController(1, 0.2, 0.05, 100);
+pid.setpoint = getValueById("setpoint");
+
+let currentValue = 90;
+setInterval(() => {
+   const correction = pid.update(currentValue);
+   currentValue += correction; // Simulate applying the correction to the system
+   console.log(`Current Value: ${currentValue}`);
+}, 1000);
+
+pid.update(currentValue);
+
+document.getElementById("error").innerHTML = "Erro = " + pid.error;
+
+document.getElementById("output").innerHTML = "Saída = " + pid.output;
+
+document.getElementById("derivative").innerHTML = "Derivada = " + pid.derivative;
+document.getElementById("kpValue").innerHTML = "KP.value: " + pid.kp  ;
+document.getElementById("kiValue").innerHTML = "KI.value: " + pid.ki  ;
+document.getElementById("kdValue").innerHTML = "KD.value: " + pid.kd  ;
+
+document.getElementById("setpointValue").innerHTML = "SP.value: " + pid.setpoint  ;document.getElementById("output").innerHTML = "OUT.value: " + pid.output  ;
+document.getElementById("derivative").innerHTML = "DER.value: " + pid.derivative;
+
+document.getElementById("update").innerHTML = "Update: " + pid.update(currentValue)  ;
+document.getElementById("som").innerHTML = "Soma.pid: " + pid.soma()  ;
+
+
+
+function calcularPID(){
+
+    pid.kp=parseFloat(document.getElementById("kp").value);
+
+    pid.ki=parseFloat(document.getElementById("ki").value);
+
+    pid.kd=parseFloat(document.getElementById("kd").value);
+
+    pid.setpoint=parseFloat(document.getElementById("setpoint").value);
+
+    let cv = parseFloat(document.getElementById("currentValue").value);
+
+    let out = pid.update(cv);
+
+    document.getElementById("output").innerHTML = "OUT = " + out;
+
+    document.getElementById("error").innerHTML = "ERR = " + pid.error;
+
+    document.getElementById("derivative").innerHTML ="DER = " + pid.derivative;
+}
+
+
+
+function sum(){
+
+k0 = parseFloat(document.getElementById('ki').value) ;
+k1 = parseFloat(document.getElementById('kd').value); 
+k2 = parseFloat(document.getElementById('kp').value) ;
+
+
+	let Z = (k0 + k1 + k2);
+        console.log("Soma: " + Z);
+	console.log("ki= " + k0 + "kp= " + k1 +"kd= " + k2);
+
+document.getElementById("ki").innerHTML = k0  ;
+document.getElementById("kp").innerHTML = k1  ;
+document.getElementById("kd").innerHTML = k2  ;
+
+document.getElementById("Z").innerHTML = "Sum: " + Z  ;
+
+}
+
+
+function sub(){
+let K = (k0 -k1 );
+
+document.getElementById("K").innerHTML = "Sub: " + K ;
+}
+
+function mult(){
+var W = (k0 * k1);
+
+document.getElementById("W").innerHTML = "Mult: " + W  ;
+}
+
+
+
+ </script>
+
+ </head>
+
+</body>
+</html>
